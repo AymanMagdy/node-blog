@@ -53,16 +53,22 @@ app.put('/:id', (req, res) => {
             "postBody": req.body.postBody
         } 
     };
-    dbo.collection("users").updateOne(myquery, newvalues, function(err, res) {
+    dbo.collection("users").updateOne(myquery, newvalues, function(err, obj) {
         if (err) throw err;
-        res.send(`Updated the post with id: ${postId}`)
+        res.send(`Updated the post with id: ${postId}.\n ${obj}`)
         db.close();
     });
 })
 
 app.delete('/:id', (req, res) => {
-    post_id = req.params.id
-    res.send(`Deleting a post with id: ${post_id}`)
+    if (err) throw err;
+    var dbo = db.db("blod-post");
+    var myquery = { postId: req.params.id };
+    dbo.collection("posts").deleteMany(myquery, function(err, obj) {
+        if (err) throw err;
+        res.send(`Updated post with id: ${req.params.id}. \n ${obj}`)
+        db.close();
+    });
 })
 
 module.exports = app
