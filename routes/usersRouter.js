@@ -4,6 +4,8 @@ const User = require('../models/userModel')
 const app = express.Router();
 app.use(bodyParser.json());
 
+
+// Selecting all the users from the database
 app.get('/', (req, res) => {
     if (err) throw err;
     var dbo = db.db("blog-post");
@@ -14,11 +16,21 @@ app.get('/', (req, res) => {
     });
 })
 
+
+// Selecting a user based on an id.
 app.get('/:id', (req, res) => {
-    user_id = req.params.id
-    res.send(`Printing a specific user : ${user_id}`)
+    usertId = req.params.id
+    if (err) throw err;
+    var dbo = db.db("blog-post");
+    dbo.collection("posts").find({id: userId}).toArray(function(err, result) {
+        if (err) throw err;
+        res.send(JSON.stringify(result))
+        db.close();
+    });
 })
 
+
+// Addding a specific user to the db with a post request.
 app.post('/', (req, res) => {
     new_user = {
         "firstName": req.body.firstName,
@@ -39,9 +51,30 @@ app.post('/', (req, res) => {
     });
 })
 
+
+// update a user details with post request.
 app.put('/:id', (req, res) => {
-    user_id = req.params.id
-    res.send(`Editing a specific user data with id: ${user_id}`)
+    if (err) throw err;
+    var dbo = db.db("blog-post");
+    var myquery = { 
+        userId: req.params.id
+     };
+    var newvalues = { $set: 
+        {
+            "firstName": req.body.firstName,
+            "lastName": req.body.lastName,
+            "password": req.body.password,
+            "dob": req.body.dob,
+            "gender": req.body.gender,
+            "email": req.body.email,
+            "number": req.body.number
+        } 
+    };
+    dbo.collection("users").updateOne(myquery, newvalues, function(err, res) {
+        if (err) throw err;
+        res.send(`Updated the user with id: ${userId}`)
+        db.close();
+    });
 })
 
 app.delete('/:id', (req, res) => {
