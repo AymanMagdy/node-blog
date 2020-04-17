@@ -2,12 +2,26 @@ const express = require('express')
 const app = express.Router()
 
 app.get('/', (req, res) => {
-    res.send("Print all the posts here.")
+    if (err) throw err;
+    var dbo = db.db("blog-post");
+    dbo.collection("posts").find({}).toArray(function(err, result) {
+        if (err) throw err;
+        res.send(JSON.stringify(result))
+        db.close();
+    });
 })
 
+// db.smartphones.find({ inStock: true });
+
 app.get('/:id', (req, res) => {
-    post_id = req.params.id
-    res.send(`Printing a specific post : ${post_id}`)
+    postId = req.params.id
+    if (err) throw err;
+    var dbo = db.db("blog-post");
+    dbo.collection("posts").find({id: postId}).toArray(function(err, result) {
+        if (err) throw err;
+        res.send(JSON.stringify(result))
+        db.close();
+    });
 })
 
 app.post('/', (req, res) => {
