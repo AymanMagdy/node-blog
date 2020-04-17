@@ -78,8 +78,14 @@ app.put('/:id', (req, res) => {
 })
 
 app.delete('/:id', (req, res) => {
-    user_id = req.params.id
-    res.send(`Deleting a specfic user with id: ${user_id}`)
+    if (err) throw err;
+    var dbo = db.db("blod-post");
+    var myquery = { postId: req.params.id };
+    dbo.collection("users").deleteMany(myquery, function(err, obj) {
+        if (err) throw err;
+        res.send(`Updated user with id: ${req.params.id}. \n ${obj}`)
+        db.close();
+    });
 })
 
 module.exports = app
