@@ -5,7 +5,13 @@ const app = express.Router();
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-    res.send("Print all the users here.")
+    if (err) throw err;
+    var dbo = db.db("blog-post");
+    dbo.collection("users").find({}).toArray(function(err, result) {
+        if (err) throw err;
+        res.send(JSON.stringify(result))
+        db.close();
+    });
 })
 
 app.get('/:id', (req, res) => {
