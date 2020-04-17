@@ -11,7 +11,6 @@ app.get('/', (req, res) => {
     });
 })
 
-// db.smartphones.find({ inStock: true });
 
 app.get('/:id', (req, res) => {
     postId = req.params.id
@@ -40,9 +39,25 @@ app.post('/', (req, res) => {
     });
 })
 
+
+// Updating the post with a specific id.
 app.put('/:id', (req, res) => {
-    post_id = req.params.id
-    res.send(`Editing a post data with id: ${post_id}`)
+    if (err) throw err;
+    var dbo = db.db("blog-post");
+    var myquery = { 
+        postId: req.params.id
+     };
+    var newvalues = { $set: 
+        {
+            "postTitle": req.body.postTitle,
+            "postBody": req.body.postBody
+        } 
+    };
+    dbo.collection("users").updateOne(myquery, newvalues, function(err, res) {
+        if (err) throw err;
+        res.send(`Updated the post with id: ${postId}`)
+        db.close();
+    });
 })
 
 app.delete('/:id', (req, res) => {
