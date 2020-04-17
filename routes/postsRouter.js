@@ -11,7 +11,19 @@ app.get('/:id', (req, res) => {
 })
 
 app.post('/', (req, res) => {
-    res.send('Adding a new post.')
+    new_post = {
+        "userId": req.body.userId,
+        "postTitle": req.body.postTitle,
+        "postBody": req.body.postBody
+    }
+    var myData = new User(new_post);
+    myData.save()
+    .then(item => {
+      res.send("New post has been saved to database");
+    })
+    .catch(err => {
+      res.status(400).send(`unable to add post to database ${err}`);
+    });
 })
 
 app.put('/:id', (req, res) => {
