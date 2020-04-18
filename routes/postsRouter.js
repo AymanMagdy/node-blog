@@ -3,12 +3,15 @@ const app = express.Router()
 
 app.get('/', (req, res) => {
     if (err) throw err;
-    var dbo = db.db("blog-post");
-    dbo.collection("posts").find({}).toArray(function(err, result) {
-        if (err) throw err;
-        res.send(JSON.stringify(result))
-        db.close();
-    });
+    getAllDataPromise.collection("posts").find({}).toArray()
+    getAllDataPromise(err, data)
+        .then(data => {
+            res.send(JSON.stringify(data))
+            db.close()
+        })
+        .catch(err => {
+            res.send(JSON.stringify(err))
+        })
 })
 
 
@@ -16,11 +19,16 @@ app.get('/:id', (req, res) => {
     postId = req.params.id
     if (err) throw err;
     var dbo = db.db("blog-post");
-    dbo.collection("posts").find({id: postId}).toArray(function(err, result) {
-        if (err) throw err;
-        res.send(JSON.stringify(result))
-        db.close();
-    });
+    const getPostPromise = dbo.promisify(db.db("blog-post"))
+    getPostPromise.collection("posts").find({id: userId}).toArray();
+    getPostPromise(err, data)
+    .then(data => {
+        res.send(JSON.stringify(data))
+        db.close()
+    })
+    .catch(err => {
+        res.send(JSON.stringify(err))
+    })
 })
 
 app.post('/', (req, res) => {
@@ -53,22 +61,28 @@ app.put('/:id', (req, res) => {
             "postBody": req.body.postBody
         } 
     };
-    dbo.collection("users").updateOne(myquery, newvalues, function(err, obj) {
-        if (err) throw err;
-        res.send(`Updated the post with id: ${postId}.\n ${obj}`)
-        db.close();
-    });
+    const updatePostPromise = dbo.promisify(db.db("blog-post"))
+    updatePostPromise.collection("posts").updateOne(myquery, newvalues)
+    .then(data => {
+        res.send(JSON.stringify(data))
+        dbo.close()
+    })
+    .catch(err => {
+        res.send(JSON.stringify(err))
+    })
 })
 
 app.delete('/:id', (req, res) => {
     if (err) throw err;
     var dbo = db.db("blod-post");
     var myquery = { postId: req.params.id };
-    dbo.collection("posts").deleteMany(myquery, function(err, obj) {
-        if (err) throw err;
-        res.send(`Updated post with id: ${req.params.id}. \n ${obj}`)
-        db.close();
-    });
+    dbo.collection("posts").deleteMany(myquery)
+    .then(data => {
+        res.send('Deleted a post')
+    })
+    .catch(error => {
+        res.send("An error occoured.")
+    })
 })
 
 module.exports = app
