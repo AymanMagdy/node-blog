@@ -15,6 +15,7 @@ app.get('/', (req, res) => {
 })
 
 
+// Get a post with a specific id.
 app.get('/:id', (req, res) => {
     postId = req.params.id
     if (err) throw err;
@@ -31,6 +32,25 @@ app.get('/:id', (req, res) => {
     })
 })
 
+
+// Getting posts of a specifc user.
+app.get('/users/:id/posts', (req, res) => {
+    userId = req.params.id
+    if (err) throw err;
+    var dbo = db.db("blog-post");
+    const getPostPromise = dbo.promisify(db.db("blog-post"))
+    getPostPromise.collection("posts").find({userId: userId}).toArray();
+    getPostPromise(err, data)
+    .then(data => {
+        res.send(JSON.stringify(data))
+        db.close()
+    })
+    .catch(err => {
+        res.send(JSON.stringify(err))
+    })
+})
+
+// Adding a new post
 app.post('/', (req, res) => {
     new_post = {
         "userId": req.body.userId,
