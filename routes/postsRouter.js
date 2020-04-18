@@ -21,7 +21,9 @@ app.get('/:id', (req, res) => {
     if (err) throw err;
     var dbo = db.db("blog-post");
     const getPostPromise = dbo.promisify(db.db("blog-post"))
-    getPostPromise.collection("posts").find({id: userId}).toArray();
+    getPostPromise.collection("posts")
+    .populate('author')
+    .find({id: userId}).toArray();
     getPostPromise(err, data)
     .then(data => {
         res.send(JSON.stringify(data))
