@@ -1,10 +1,19 @@
 const express = require('express')
 const usersRouter = require('./routes/usersRouter')
-var bodyParser = require('body-parser');
 const postsRouter = require('./routes/postsRouter')
 const mongoose = require('mongoose')
 const app = express()
 const PORT = process.env.PORT || 5000
+var bodyParser = require('body-parser');
+var session = require('express-session')
+
+app.set('trust proxy', 1)
+app.use(session({
+  secret: 'lib api',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+}))
 
 app.use('/users', usersRouter)
 app.use('/posts', postsRouter)
