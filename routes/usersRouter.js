@@ -8,26 +8,34 @@ app.use(bodyParser.json());
 // Selecting all the users from the database
 app.get('/', (req, res) => {
     if (err) throw err;
-    var dbo = db.db("blog-post");
-    const getAllData = dbo.collection("users").find({}).toArray()
-    getAllData.then(result => {
-        res.send(JSON.stringify(result))
-        db.close();
-    }).catch(error => {
-        if (error)  res.send(`An error occured getting data from DB -> ${error}`);
-    })
+    const getAllDataPromise = dbo.promisify(db.db("blog-post"))
+    getAllDataPromise.collection("users").find({}).toArray()
+    getAllDataPromise(err, data)
+        .then(data => {
+            res.send(JSON.stringify(data))
+            db.close()
+        })
+        .catch(err => {
+            res.send(JSON.stringify(err))
+        })
 })
+
 
 // Selecting a user based on an id.
 app.get('/:id', (req, res) => {
     usertId = req.params.id
     if (err) throw err;
     var dbo = db.db("blog-post");
-    dbo.collection("posts").find({id: userId}).toArray(function(err, result) {
-        if (err) throw err;
-        res.send(JSON.stringify(result))
-        db.close();
-    });
+    const getPostPromise = dbo.promisify(db.db("blog-post"))
+    getPostPromise.collection("posts").find({id: userId}).toArray();
+    getPostPromise(err, data)
+    .then(data => {
+        res.send(JSON.stringify(data))
+        db.close()
+    })
+    .catch(err => {
+        res.send(JSON.stringify(err))
+    })
 })
 
 
@@ -71,22 +79,29 @@ app.put('/:id', (req, res) => {
             "number": req.body.number
         } 
     };
-    dbo.collection("users").updateOne(myquery, newvalues, function(err, res) {
-        if (err) throw err;
-        res.send(`Updated the user with id: ${userId}`)
-        db.close();
-    });
+    const updateUserPromise = dbo.promisify(db.db("blog-post"))
+    updateUserPromise.collection("users").updateOne(myquery, newvalues)
+    .then(data => {
+        res.send(JSON.stringify(data))
+        dbo.close()
+    })
+    .catch(err => {
+        res.send(JSON.stringify(err))
+    })
 })
 
+// Deleting a user.
 app.delete('/:id', (req, res) => {
     if (err) throw err;
     var dbo = db.db("blod-post");
     var myquery = { postId: req.params.id };
-    dbo.collection("users").deleteMany(myquery, function(err, obj) {
-        if (err) throw err;
-        res.send(`Updated user with id: ${req.params.id}. \n ${obj}`)
-        db.close();
-    });
+    dbo.collection("users").deleteMany(myquery)
+    .then(data => {
+        res.send('Deleted a user')
+    })
+    .catch(error => {
+        res.send("An error occoured.")
+    })
 })
 
 module.exports = app
