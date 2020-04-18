@@ -6,7 +6,7 @@ const app = express.Router();
 app.use(bodyParser.json());
 
 // Addding a specific user to the db with a post request.
-app.post('/login', (req, res) => {
+app.post('/', (req, res) => {
     loginEmail: req.params.email
     loginPassword: req.params.password
     var dbo = db.db("blog-post");
