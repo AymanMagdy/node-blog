@@ -14,10 +14,9 @@ app.get('/', (req, res) => {
         res.send(JSON.stringify(result))
         db.close();
     }).catch(error => {
-        if (error)  res.send(error);
+        if (error)  res.send(`An error occured getting data from DB -> ${error}`);
     })
 })
-
 
 // Selecting a user based on an id.
 app.get('/:id', (req, res) => {
