@@ -9,11 +9,13 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
     if (err) throw err;
     var dbo = db.db("blog-post");
-    dbo.collection("users").find({}).toArray(function(err, result) {
-        if (err) throw err;
+    const getAllData = dbo.collection("users").find({}).toArray()
+    getAllData.then(result => {
         res.send(JSON.stringify(result))
         db.close();
-    });
+    }).catch(error => {
+        if (error)  res.send(error);
+    })
 })
 
 
