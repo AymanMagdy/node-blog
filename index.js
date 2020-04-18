@@ -1,6 +1,7 @@
 const express = require('express')
 const usersRouter = require('./routes/usersRouter')
 const postsRouter = require('./routes/postsRouter')
+const loginRouter = require('./routes/loginRouter')
 const mongoose = require('mongoose')
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -15,6 +16,7 @@ app.use(session({
   cookie: { secure: true }
 }))
 
+app.use('/login', loginRouter)
 app.use('/users', usersRouter)
 app.use('/posts', postsRouter)
 app.use(bodyParser.json());
